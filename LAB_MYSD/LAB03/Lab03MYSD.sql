@@ -1,0 +1,846 @@
+-- ============================================================
+-- CICLO 1: Tablas
+-- ============================================================
+
+-- GC: PARTICIPANTES
+
+CREATE TABLE PARTICIPANTES (
+    id NUMBER(10) NOT NULL,
+    idt VARCHAR2(20) NOT NULL,
+    idn VARCHAR2(20) NOT NULL,
+    pais VARCHAR2(30),
+    correo VARCHAR2(50) NOT NULL
+);
+
+CREATE TABLE PERSONAS (
+    id_participante NUMBER(10) NOT NULL,
+    nombres VARCHAR2(60) NOT NULL
+);
+
+CREATE TABLE CICLISTAS (
+    id_persona NUMBER(10) NOT NULL,
+    nacimiento DATE,
+    categoria VARCHAR2(20) NOT NULL
+);
+
+CREATE TABLE EMPRESAS (
+    id_participante NUMBER(10) NOT NULL,
+    razonSocial VARCHAR2(80) NOT NULL
+);
+
+-- GC: CARRERAS
+
+CREATE TABLE CARRERAS (
+    codigo VARCHAR2(10) NOT NULL,
+    nombre VARCHAR2(30) NOT NULL,
+    pais VARCHAR2(30) NOT NULL,
+    categoria VARCHAR2(20) NOT NULL,
+    periodicidad VARCHAR2(20) NOT NULL
+);
+
+CREATE TABLE PUNTOS (
+    nombre VARCHAR2(10) NOT NULL,
+    orden NUMBER(2) NOT NULL,
+    tipo VARCHAR2(20) NOT NULL,
+    distancia NUMBER(8,2) NOT NULL,
+    tiempoLimite NUMBER(10),
+    codigo_carrera VARCHAR2(10) NOT NULL
+);
+
+CREATE TABLE SEGMENTOS (
+    nombre VARCHAR2(10) NOT NULL,
+    tipo VARCHAR2(20) NOT NULL,
+    nombre_iniciaEn VARCHAR2(10) NOT NULL,
+    nombre_finalizaEn VARCHAR2(10) NOT NULL
+);
+
+CREATE TABLE PROPIEDADDE (
+    id_participante NUMBER(10) NOT NULL,
+    codigo_carrera  VARCHAR2(10) NOT NULL,
+    porcentaje NUMBER(5,2)
+);
+
+-- GC: VERSIONES
+
+CREATE TABLE VERSIONES (
+    nombre VARCHAR2(5) NOT NULL,
+    fecha DATE NOT NULL,
+    codigo_carrera VARCHAR2(10) NOT NULL
+);
+
+-- GC: REGISTROS
+
+CREATE TABLE REGISTROS (
+    numero NUMBER(10) NOT NULL,
+    fecha DATE NOT NULL,
+    tiempo NUMBER(10) NOT NULL,
+    posicion NUMBER(5) NOT NULL,
+    revision VARCHAR2(20),
+    dificultad VARCHAR2(20),
+    comentario VARCHAR2(20),
+    nombre_version VARCHAR2(5) NOT NULL,
+    id_ciclista NUMBER(10) NOT NULL,
+    nombre_segmento VARCHAR2(10) NOT NULL
+);
+
+
+CREATE TABLE FOTOS (
+    id NUMBER(10) NOT NULL,
+    archivo BLOB NOT NULL,
+    id_registro NUMBER(10) NOT NULL
+);
+
+-- Tablas asociativas N:M
+ 
+CREATE TABLE CICLISTA_VERSION (
+    id_ciclista NUMBER(10) NOT NULL,
+    nombre_version VARCHAR2(5) NOT NULL
+);
+ 
+CREATE TABLE VERSION_SEGMENTO (
+    nombre_version VARCHAR2(5) NOT NULL,
+    nombre_segmento VARCHAR2(10) NOT NULL
+);
+ 
+CREATE TABLE PARTICIPANTE_VERSION (
+    id_participante NUMBER(10) NOT NULL,
+    nombre_version VARCHAR2(5) NOT NULL
+);
+
+
+-- GC: EXPERIENCIA DE USUARIOS
+
+CREATE TABLE ENCUESTAS (
+    id NUMBER(10) NOT NULL,
+    criterio VARCHAR2(40) NOT NULL,
+    presupuesto NUMBER(12) NOT NULL,
+    valorIncentivo NUMBER(12) NOT NULL,
+    fechaInicio DATE NOT NULL,
+    fechaFin DATE NOT NULL,
+    nombre_version VARCHAR2(5) NOT NULL
+);
+
+CREATE TABLE EVALUACIONES (
+    id NUMBER(10) NOT NULL,
+    fecha DATE NOT NULL,
+    puntuacion NUMBER(1) NOT NULL,
+    estado VARCHAR2(20) NOT NULL,
+    detalle_experiencia XMLTYPE,
+    retroalimentacion VARCHAR2(200),
+    origen VARCHAR2(10) NOT NULL,
+    id_encuesta NUMBER(10) NOT NULL,
+    id_participante NUMBER(10)
+);
+
+CREATE TABLE COMENTARIOS (
+    id NUMBER(10) NOT NULL,
+    contenido VARCHAR2(50) NOT NULL,
+    id_evaluacion NUMBER(10) NOT NULL
+);
+
+-- ============================================================
+-- CICLO 1: XTablas
+-- ============================================================
+/**
+DROP TABLE COMENTARIOS;
+DROP TABLE EVALUACIONES;
+DROP TABLE ENCUESTAS;
+DROP TABLE FOTOS;
+DROP TABLE PARTICIPANTE_VERSION;
+DROP TABLE CICLISTA_VERSION;
+DROP TABLE VERSION_SEGMENTO;
+DROP TABLE REGISTROS;
+DROP TABLE VERSIONES;
+DROP TABLE PROPIEDADDE;
+DROP TABLE SEGMENTOS;
+DROP TABLE PUNTOS;
+DROP TABLE CARRERAS;
+DROP TABLE EMPRESAS;
+DROP TABLE CICLISTAS;
+DROP TABLE PERSONAS;
+DROP TABLE PARTICIPANTES;
+*/
+
+-- ============================================================
+-- CICLO 1: PoblarOK
+-- ============================================================
+ 
+-- GC: PARTICIPANTES
+
+
+INSERT INTO PARTICIPANTES VALUES (1, 'CC',  '12345678',  'Colombia', 'ana.gomez@mail.com');
+INSERT INTO PARTICIPANTES VALUES (2, 'CC',  '87654321',  'Colombia', 'luis.perez@mail.com');
+INSERT INTO PARTICIPANTES VALUES (4, 'NIT', '900123456', 'Colombia', 'info@teamcol.com');
+INSERT INTO PARTICIPANTES VALUES (5, 'CC',  '11223344',  'Peru',     'carlos.rios@mail.com');
+INSERT INTO PARTICIPANTES VALUES (6, 'CE',  '55566677',  'Chile',    'diego.mora@mail.com');
+INSERT INTO PARTICIPANTES VALUES (3, 'CE',  '99988877',  NULL, 'maria.torres@mail.com');
+
+ 
+INSERT INTO PERSONAS VALUES (1, 'Ana Gomez');
+INSERT INTO PERSONAS VALUES (2, 'Luis Perez');
+INSERT INTO PERSONAS VALUES (3, 'Maria Torres');
+INSERT INTO PERSONAS VALUES (5, 'Carlos Rios');
+INSERT INTO PERSONAS VALUES (6, 'Diego Mora');
+ 
+INSERT INTO CICLISTAS VALUES (1, DATE '1990-03-15', 'Elite');
+INSERT INTO CICLISTAS VALUES (2, DATE '1985-07-22', 'Master');
+INSERT INTO CICLISTAS VALUES (5, DATE '1995-11-01', 'Elite');
+ 
+INSERT INTO EMPRESAS VALUES (4, 'Team Colombia SAS');
+ 
+-- GC: CARRERAS
+ 
+INSERT INTO CARRERAS VALUES ('CAR001', 'Vuelta Colombia', 'Colombia', 'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR002', 'Tour del Cafe',   'Colombia', 'Master', 'Anual');
+INSERT INTO CARRERAS VALUES ('CAR003', 'Clasica RCN',     'Colombia', 'Elite',  'Anual');
+ 
+INSERT INTO PUNTOS VALUES ('Salida1', 1, 'Salida',  0.00,   NULL,  'CAR001');
+INSERT INTO PUNTOS VALUES ('Alto1',   4, 'Paso',    95.30,  18000, 'CAR001');
+INSERT INTO PUNTOS VALUES ('Meta1',   8, 'Llegada', 180.50, 32400, 'CAR001');
+INSERT INTO PUNTOS VALUES ('Salida2', 1, 'Salida',  0.00,   NULL,  'CAR002');
+INSERT INTO PUNTOS VALUES ('Alto2',   3, 'Paso',    60.00,  14400, 'CAR002');
+INSERT INTO PUNTOS VALUES ('Meta2',   6, 'Llegada', 120.00, 25200, 'CAR002');
+ 
+INSERT INTO SEGMENTOS VALUES ('Seg001', 'Montana',  'Salida1', 'Alto1');
+INSERT INTO SEGMENTOS VALUES ('Seg002', 'Descenso', 'Alto1',   'Meta1');
+INSERT INTO SEGMENTOS VALUES ('Seg003', 'Plano',    'Salida2', 'Alto2');
+ 
+INSERT INTO PROPIEDADDE VALUES (4, 'CAR001', 60.00);
+INSERT INTO PROPIEDADDE VALUES (4, 'CAR002', 100.00);
+INSERT INTO PROPIEDADDE VALUES (1, 'CAR003', NULL);
+ 
+-- GC: VERSIONES
+ 
+INSERT INTO VERSIONES VALUES ('V2024', DATE '2024-06-01', 'CAR001');
+INSERT INTO VERSIONES VALUES ('V2023', DATE '2023-06-10', 'CAR001');
+INSERT INTO VERSIONES VALUES ('V2025', DATE '2024-08-15', 'CAR002');
+ 
+-- Tablas asociativas N:M
+ 
+INSERT INTO CICLISTA_VERSION VALUES (1, 'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (2, 'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (5, 'V2023');
+ 
+INSERT INTO VERSION_SEGMENTO VALUES ('V2024', 'Seg001');
+INSERT INTO VERSION_SEGMENTO VALUES ('V2024', 'Seg002');
+INSERT INTO VERSION_SEGMENTO VALUES ('V2023', 'Seg001');
+ 
+INSERT INTO PARTICIPANTE_VERSION VALUES (1, 'V2024');
+INSERT INTO PARTICIPANTE_VERSION VALUES (2, 'V2024');
+INSERT INTO PARTICIPANTE_VERSION VALUES (4, 'V2023');
+ 
+-- GC: REGISTROS
+ 
+INSERT INTO REGISTROS VALUES (1, DATE '2024-06-08', 23400, 1, NULL,      'Alta',  NULL,         'V2024',  1, 'Seg001');
+INSERT INTO REGISTROS VALUES (2, DATE '2024-06-08', 24100, 2, NULL,      'Media', NULL,         'V2024',  2, 'Seg001');
+INSERT INTO REGISTROS VALUES (3, DATE '2024-06-08', 25300, 3, 'Oficial', 'Alta',  'Gran etapa', 'V2024',  5, 'Seg002');
+ 
+-- GC: EXPERIENCIA DE USUARIOS
+ 
+INSERT INTO ENCUESTAS VALUES (1, 'calidad percibida', 500000, 10000, DATE '2024-06-01', DATE '2024-06-30', 'V2024');
+INSERT INTO ENCUESTAS VALUES (2, 'infraestructura',   300000, 8000,  DATE '2024-08-01', DATE '2024-08-31', 'V2024');
+INSERT INTO ENCUESTAS VALUES (3, 'atencion',          200000, 5000,  DATE '2023-06-01', DATE '2023-06-30', 'V2023');
+ 
+INSERT INTO EVALUACIONES VALUES (1, DATE '2024-06-10', 5, 'publicada',     NULL, 'Excelente organizacion', 'Web',   1, 1);
+INSERT INTO EVALUACIONES VALUES (2, DATE '2024-06-12', 2, 'en moderacion', NULL, NULL,                     'Movil', 1, 2);
+INSERT INTO EVALUACIONES VALUES (3, DATE '2024-06-15', 4, 'publicada',     NULL, 'Buena logistica',        'Web',   1, 5);
+ 
+INSERT INTO COMENTARIOS VALUES (1, 'Totalmente de acuerdo', 1);
+INSERT INTO COMENTARIOS VALUES (2, 'No estoy de acuerdo',   2);
+INSERT INTO COMENTARIOS VALUES (3, 'Me parece correcto',    3);
+
+
+-- ============================================================
+-- CICLO 1: PoblarNoOK
+-- ============================================================
+ 
+-- Casos que NO deberian permitirse y AUN SE PERMITEN
+-- (no hay FK ni CHECK aun, solo NOT NULL)
+
+-- Caso 1: CICLISTA con id_persona inexistente en PERSONAS
+-- Valida: integridad referencial CICLISTAS -> PERSONAS
+-- INSERT INTO CICLISTAS VALUES (99, DATE '2000-01-01', 'Elite');
+-- id_persona=99 no existe en PERSONAS. Deberia fallar pero se permite.
+
+-- Caso 2: REGISTRO con nombre_version inexistente en VERSIONES
+-- Valida: integridad referencial REGISTROS -> VERSIONES
+-- INSERT INTO REGISTROS VALUES (99, DATE '2024-01-01', 10000, 1, NULL, NULL, 'VXXX', 1, 'Seg001');
+-- nombre_version='VXXX' no existe en VERSIONES. Deberia fallar pero se permite.
+
+-- Caso 3: EVALUACION con puntuacion fuera de rango
+-- Valida: dominio de puntuacion, no hay CHECK aun
+-- INSERT INTO EVALUACIONES VALUES (99, DATE '2024-01-01', 9, 'publicada', NULL, NULL, 'Web', 1, 1);
+-- puntuacion=9 deberia fallar pero se permite.
+
+-- Casos que NO deberian permitirse y YA NO SE PERMITEN
+-- (violacion de NOT NULL)
+ 
+-- Caso 4: PARTICIPANTE sin correo (NOT NULL)
+-- INSERT INTO PARTICIPANTES VALUES (99, 'CC', '99999999', 'Colombia', NULL);
+-- correo es NOT NULL No se permite.
+
+-- Caso 5: CARRERA sin nombre (NOT NULL)
+-- INSERT INTO CARRERAS VALUES ('CAR999', NULL, 'Colombia', 'Elite', 'Anual');
+-- nombre es NOT NULL No se permite. 
+
+-- Caso 6: REGISTRO sin posicion (NOT NULL)
+-- INSERT INTO REGISTROS VALUES (99, DATE '2024-01-01', 10000, NULL, NULL, NULL, 'V2024', 1, 'Seg001');
+-- posicion es NOT NULL. No se permite. 
+
+-- ============================================================
+-- CICLO 1: XPoblar
+-- ============================================================
+ 
+DELETE FROM COMENTARIOS;
+DELETE FROM EVALUACIONES;
+DELETE FROM ENCUESTAS;
+DELETE FROM FOTOS;
+DELETE FROM REGISTROS;
+DELETE FROM PARTICIPANTE_VERSION;
+DELETE FROM CICLISTA_VERSION;
+DELETE FROM VERSION_SEGMENTO;
+DELETE FROM VERSIONES;
+DELETE FROM PROPIEDADDE;
+DELETE FROM SEGMENTOS;
+DELETE FROM PUNTOS;
+DELETE FROM CARRERAS;
+DELETE FROM EMPRESAS;
+DELETE FROM CICLISTAS;
+DELETE FROM PERSONAS;
+DELETE FROM PARTICIPANTES;
+ 
+-- ============================================================
+-- CICLO 1: Atributos
+-- ============================================================
+ 
+-- GC: PARTICIPANTES
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT CK_PARTICIPANTES_IDT
+    CHECK (idt IN ('CC', 'CE', 'NIT', 'PA'));
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT CK_PARTICIPANTES_PAIS
+    CHECK (LENGTH(pais) >= 2);
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT CK_PARTICIPANTES_CORREO
+    CHECK (correo LIKE '%@%.%');
+ 
+-- GC: CARRERAS
+ 
+ALTER TABLE CARRERAS ADD CONSTRAINT CK_CARRERAS_CATEGORIA
+    CHECK (categoria IN ('Elite', 'Master', 'Sub23', 'Junior'));
+ 
+ALTER TABLE CARRERAS ADD CONSTRAINT CK_CARRERAS_PERIODICIDAD
+    CHECK (periodicidad IN ('Anual', 'Bianual', 'Irregular'));
+ 
+-- GC: PUNTOS
+ 
+ALTER TABLE PUNTOS ADD CONSTRAINT CK_PUNTOS_TIPO
+    CHECK (tipo IN ('Salida', 'Llegada', 'Paso'));
+ 
+ALTER TABLE PUNTOS ADD CONSTRAINT CK_PUNTOS_DISTANCIA
+    CHECK (distancia >= 0);
+ 
+ALTER TABLE PUNTOS ADD CONSTRAINT CK_PUNTOS_TIEMPOLIMITE
+    CHECK (tiempoLimite > 0);
+ 
+-- GC: SEGMENTOS
+ 
+ALTER TABLE SEGMENTOS ADD CONSTRAINT CK_SEGMENTOS_TIPO
+    CHECK (tipo IN ('Montana', 'Descenso', 'Plano', 'Contrarreloj'));
+ 
+-- GC: PROPIEDADDE
+ 
+ALTER TABLE PROPIEDADDE ADD CONSTRAINT CK_PROPIEDADDE_PORCENTAJE
+    CHECK (porcentaje BETWEEN 0 AND 100);
+ 
+-- GC: REGISTROS
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT CK_REGISTROS_POSICION
+    CHECK (posicion > 0);
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT CK_REGISTROS_TIEMPO
+    CHECK (tiempo > 0);
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT CK_REGISTROS_DIFICULTAD
+    CHECK (dificultad IN ('Alta', 'Media', 'Baja'));
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT CK_REGISTROS_REVISION
+    CHECK (revision IN ('Oficial', 'Pendiente', 'Rechazada'));
+ 
+-- GC: ENCUESTAS
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT CK_ENCUESTAS_CRITERIO
+    CHECK (criterio IN ('atencion', 'tiempo de espera', 'calidad percibida', 'infraestructura'));
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT CK_ENCUESTAS_PRESUPUESTO
+    CHECK (presupuesto > 0);
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT CK_ENCUESTAS_VALORINCENTIVO
+    CHECK (valorIncentivo > 0);
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT CK_ENCUESTAS_FECHAS
+    CHECK (fechaFin > fechaInicio);
+ 
+-- GC: EVALUACIONES
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT CK_EVALUACIONES_PUNTUACION
+    CHECK (puntuacion BETWEEN 1 AND 5);
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT CK_EVALUACIONES_ESTADO
+    CHECK (estado IN ('publicada', 'en moderacion', 'validada', 'archivada'));
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT CK_EVALUACIONES_ORIGEN
+    CHECK (origen IN ('Web', 'Movil'));
+ 
+-- ============================================================
+-- CICLO 1: Primarias
+-- ============================================================
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT PK_PARTICIPANTES
+    PRIMARY KEY (id);
+ 
+ALTER TABLE PERSONAS ADD CONSTRAINT PK_PERSONAS
+    PRIMARY KEY (id_participante);
+ 
+ALTER TABLE CICLISTAS ADD CONSTRAINT PK_CICLISTAS
+    PRIMARY KEY (id_persona);
+ 
+ALTER TABLE EMPRESAS ADD CONSTRAINT PK_EMPRESAS
+    PRIMARY KEY (id_participante);
+ 
+ALTER TABLE CARRERAS ADD CONSTRAINT PK_CARRERAS
+    PRIMARY KEY (codigo);
+ 
+ALTER TABLE PUNTOS ADD CONSTRAINT PK_PUNTOS
+    PRIMARY KEY (nombre);
+ 
+ALTER TABLE SEGMENTOS ADD CONSTRAINT PK_SEGMENTOS
+    PRIMARY KEY (nombre);
+ 
+ALTER TABLE PROPIEDADDE ADD CONSTRAINT PK_PROPIEDADDE
+    PRIMARY KEY (id_participante, codigo_carrera);
+ 
+ALTER TABLE VERSIONES ADD CONSTRAINT PK_VERSIONES
+    PRIMARY KEY (nombre);
+ 
+ALTER TABLE FOTOS ADD CONSTRAINT PK_FOTOS
+    PRIMARY KEY (id);
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT PK_REGISTROS
+    PRIMARY KEY (numero);
+ 
+ALTER TABLE CICLISTA_VERSION ADD CONSTRAINT PK_CICLISTA_VERSION
+    PRIMARY KEY (id_ciclista, nombre_version);
+ 
+ALTER TABLE VERSION_SEGMENTO ADD CONSTRAINT PK_VERSION_SEGMENTO
+    PRIMARY KEY (nombre_version, nombre_segmento);
+ 
+ALTER TABLE PARTICIPANTE_VERSION ADD CONSTRAINT PK_PARTICIPANTE_VERSION
+    PRIMARY KEY (id_participante, nombre_version);
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT PK_ENCUESTAS
+    PRIMARY KEY (id);
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT PK_EVALUACIONES
+    PRIMARY KEY (id);
+ 
+ALTER TABLE COMENTARIOS ADD CONSTRAINT PK_COMENTARIOS
+    PRIMARY KEY (id);
+ 
+-- ============================================================
+-- CICLO 1: Únicas
+-- ============================================================
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT UK_PARTICIPANTES_IDN
+    UNIQUE (idn);
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT UK_PARTICIPANTES_IDT
+    UNIQUE (idt, idn);
+ 
+ALTER TABLE PARTICIPANTES ADD CONSTRAINT UK_PARTICIPANTES_CORREO
+    UNIQUE (correo);
+ 
+ALTER TABLE CARRERAS ADD CONSTRAINT UK_CARRERAS_NOMBRE
+    UNIQUE (nombre);
+ 
+-- ============================================================
+-- CICLO 1: Foráneas
+-- ============================================================
+ 
+-- GC: PARTICIPANTES
+ 
+ALTER TABLE PERSONAS ADD CONSTRAINT FK_PERSONAS_PARTICIPANTES
+    FOREIGN KEY (id_participante) REFERENCES PARTICIPANTES (id);
+ 
+ALTER TABLE CICLISTAS ADD CONSTRAINT FK_CICLISTAS_PERSONAS
+    FOREIGN KEY (id_persona) REFERENCES PERSONAS (id_participante);
+ 
+ALTER TABLE EMPRESAS ADD CONSTRAINT FK_EMPRESAS_PARTICIPANTES
+    FOREIGN KEY (id_participante) REFERENCES PARTICIPANTES (id);
+ 
+-- GC: CARRERAS
+ 
+ALTER TABLE PUNTOS ADD CONSTRAINT FK_PUNTOS_CARRERAS
+    FOREIGN KEY (codigo_carrera) REFERENCES CARRERAS (codigo);
+ 
+ALTER TABLE SEGMENTOS ADD CONSTRAINT FK_SEGMENTOS_PUNTOS_INICIA
+    FOREIGN KEY (nombre_iniciaEn) REFERENCES PUNTOS (nombre);
+ 
+ALTER TABLE SEGMENTOS ADD CONSTRAINT FK_SEGMENTOS_PUNTOS_FINALIZA
+    FOREIGN KEY (nombre_finalizaEn) REFERENCES PUNTOS (nombre);
+ 
+ALTER TABLE PROPIEDADDE ADD CONSTRAINT FK_PROPIEDADDE_PARTICIPANTES
+    FOREIGN KEY (id_participante) REFERENCES PARTICIPANTES (id);
+ 
+ALTER TABLE PROPIEDADDE ADD CONSTRAINT FK_PROPIEDADDE_CARRERAS
+    FOREIGN KEY (codigo_carrera) REFERENCES CARRERAS (codigo);
+ 
+-- GC: VERSIONES
+ 
+ALTER TABLE VERSIONES ADD CONSTRAINT FK_VERSIONES_CARRERAS
+    FOREIGN KEY (codigo_carrera) REFERENCES CARRERAS (codigo);
+ 
+ALTER TABLE FOTOS ADD CONSTRAINT FK_FOTOS_REGISTROS
+    FOREIGN KEY (id_registro) REFERENCES REGISTROS (numero);
+ 
+-- GC: REGISTROS
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT FK_REGISTROS_VERSIONES
+    FOREIGN KEY (nombre_version) REFERENCES VERSIONES (nombre);
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT FK_REGISTROS_CICLISTAS
+    FOREIGN KEY (id_ciclista) REFERENCES CICLISTAS (id_persona);
+ 
+ALTER TABLE REGISTROS ADD CONSTRAINT FK_REGISTROS_SEGMENTOS
+    FOREIGN KEY (nombre_segmento) REFERENCES SEGMENTOS (nombre);
+ 
+-- Tablas asociativas N:M
+ 
+ALTER TABLE CICLISTA_VERSION ADD CONSTRAINT FK_CICLISTA_VERSION_CICLISTAS
+    FOREIGN KEY (id_ciclista) REFERENCES CICLISTAS (id_persona);
+ 
+ALTER TABLE CICLISTA_VERSION ADD CONSTRAINT FK_CICLISTA_VERSION_VERSIONES
+    FOREIGN KEY (nombre_version) REFERENCES VERSIONES (nombre);
+ 
+ALTER TABLE VERSION_SEGMENTO ADD CONSTRAINT FK_VERSION_SEGMENTO_VERSIONES
+    FOREIGN KEY (nombre_version) REFERENCES VERSIONES (nombre);
+ 
+ALTER TABLE VERSION_SEGMENTO ADD CONSTRAINT FK_VERSION_SEGMENTO_SEGMENTOS
+    FOREIGN KEY (nombre_segmento) REFERENCES SEGMENTOS (nombre);
+ 
+ALTER TABLE PARTICIPANTE_VERSION ADD CONSTRAINT FK_PARTICIPANTE_VERSION_PARTICIPANTES
+    FOREIGN KEY (id_participante) REFERENCES PARTICIPANTES (id);
+ 
+ALTER TABLE PARTICIPANTE_VERSION ADD CONSTRAINT FK_PARTICIPANTE_VERSION_VERSIONES
+    FOREIGN KEY (nombre_version) REFERENCES VERSIONES (nombre);
+ 
+-- GC: EXPERIENCIA DE USUARIOS
+ 
+ALTER TABLE ENCUESTAS ADD CONSTRAINT FK_ENCUESTAS_VERSIONES
+    FOREIGN KEY (nombre_version) REFERENCES VERSIONES (nombre);
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT FK_EVALUACIONES_ENCUESTAS
+    FOREIGN KEY (id_encuesta) REFERENCES ENCUESTAS (id);
+ 
+ALTER TABLE EVALUACIONES ADD CONSTRAINT FK_EVALUACIONES_PARTICIPANTES
+    FOREIGN KEY (id_participante) REFERENCES PARTICIPANTES (id);
+ 
+ALTER TABLE COMENTARIOS ADD CONSTRAINT FK_COMENTARIOS_EVALUACIONES
+    FOREIGN KEY (id_evaluacion) REFERENCES EVALUACIONES (id);
+ 
+-- ============================================================
+-- CICLO 1: PoblarNoOK (con proteccion activa)
+-- ============================================================
+ 
+-- Caso 1: CICLISTA con id_persona inexistente -> ahora bloqueado por FK_CICLISTAS_PERSONAS
+-- INSERT INTO CICLISTAS VALUES (99, DATE '2000-01-01', 'Elite');
+-- restriccion FK_CICLISTAS_PERSONAS violada - clave padre no encontrada.
+ 
+-- Caso 2: REGISTRO con nombre_version inexistente -> ahora bloqueado por FK_REGISTROS_VERSIONES
+-- INSERT INTO REGISTROS VALUES (99, DATE '2024-01-01', 10000, 1, NULL, NULL, NULL, NULL, 'VXXX', 1, 'Seg001');
+-- restriccion FK_REGISTROS_VERSIONES violada - clave padre no encontrada.
+ 
+-- Caso 3: EVALUACION con id_encuesta inexistente -> ahora bloqueado por FK_EVALUACIONES_ENCUESTAS
+-- INSERT INTO EVALUACIONES VALUES (99, DATE '2024-01-01', 3, 'publicada', NULL, NULL, 'Web', 999, 1);
+-- restriccion FK_EVALUACIONES_ENCUESTAS violada - clave padre no encontrada.
+ 
+-- Casos adicionales de proteccion
+ 
+-- Caso 4: EVALUACION con puntuacion fuera de rango -> bloqueado por CK_EVALUACIONES_PUNTUACION
+-- INSERT INTO EVALUACIONES VALUES (99, DATE '2024-01-01', 9, 'publicada', NULL, NULL, 'Web', 1, 1);
+-- restriccion CK_EVALUACIONES_PUNTUACION violada.
+ 
+-- Caso 5: ENCUESTA con fechaFin anterior a fechaInicio -> bloqueado por CK_ENCUESTAS_FECHAS
+-- INSERT INTO ENCUESTAS VALUES (99, 'atencion', 100000, 5000, DATE '2024-12-31', DATE '2024-01-01', 'V2024');
+-- restriccion CK_ENCUESTAS_FECHAS violada.
+ 
+-- Caso 6: PARTICIPANTE con correo duplicado -> bloqueado por UK_PARTICIPANTES_CORREO
+-- INSERT INTO PARTICIPANTES VALUES (99, 'CC', '00000001', 'Colombia', 'ana.gomez@mail.com');
+-- restriccion unica UK_PARTICIPANTES_CORREO violada.
+
+
+-- ============================================================
+-- CICLO 1: Consultando
+-- ============================================================
+
+-- CICLO 1:  <Puntos de la carrera>
+SELECT 
+    c.nombre AS carrera,
+    p.nombre AS punto,
+    p.orden,
+    p.tipo,
+    p.distancia,
+    p.tiempoLimite
+FROM PUNTOS p
+JOIN CARRERAS c
+    ON p.codigo_carrera = c.codigo
+ORDER BY c.nombre, p.orden;
+
+
+-- CICLO 1:  <Consultar los cinco segmentos con tiempos más cortos>
+SELECT 
+    r.nombre_segmento AS segmento,
+    p.nombres         AS ciclista,
+    r.tiempo
+FROM REGISTROS r
+JOIN CICLISTAS c ON r.id_ciclista = c.id_persona
+JOIN PERSONAS  p ON c.id_persona  = p.id_participante
+ORDER BY r.tiempo ASC
+FETCH FIRST 5 ROWS ONLY;
+
+
+-- CICLO 1:  <El historial de evaluaciones por participante>
+SELECT 
+    p.nombres                    AS nombre_participante,
+    en.criterio                  AS criterio_evaluado,
+    COUNT(ev.id)                 AS cantidad_evaluaciones,
+    ROUND(AVG(ev.puntuacion), 2) AS promedio_puntuacion,
+    SUM(en.valorIncentivo)       AS total_incentivos
+FROM EVALUACIONES ev
+JOIN PARTICIPANTES pa ON ev.id_participante = pa.id
+JOIN PERSONAS      p  ON pa.id             = p.id_participante
+JOIN ENCUESTAS     en ON ev.id_encuesta    = en.id
+GROUP BY p.nombres, en.criterio
+ORDER BY cantidad_evaluaciones DESC;
+
+
+-- ============================================================
+-- CICLO 1:  Construcción:  nuevamente poblando
+-- ============================================================
+ 
+-- GC: PARTICIPANTES 
+ 
+INSERT INTO PARTICIPANTES VALUES (1,  'CC',  '10200100',  'Colombia',  'sofia.mendez@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (2,  'CC',  '10300200',  'Colombia',  'andres.villa@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (3,  'CE',  '20400300',  'Ecuador',   'lucia.paz@hotmail.com');
+INSERT INTO PARTICIPANTES VALUES (4,  'NIT', '900111222', 'Colombia',  'info@teambogota.com');
+INSERT INTO PARTICIPANTES VALUES (5,  'CC',  '10500400',  'Peru',      'mario.quispe@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (6,  'CE',  '30600500',  NULL,        'paula.reyes@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (7,  'CC',  '10700600',  'Colombia',  'jorge.sierra@outlook.com');
+INSERT INTO PARTICIPANTES VALUES (8,  'PA',  '40800700',  'Argentina', 'ivan.gomez@yahoo.com');
+INSERT INTO PARTICIPANTES VALUES (9,  'CC',  '10900800',  'Colombia',  'diana.rojas@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (10, 'NIT', '900222333', 'Colombia',  'contacto@teamcali.com');
+INSERT INTO PARTICIPANTES VALUES (11, 'CC',  '11000900',  NULL,        'carlos.ospina@gmail.com');
+INSERT INTO PARTICIPANTES VALUES (12, 'CE',  '50901000',  'Venezuela', 'valentina.cruz@gmail.com');
+ 
+-- GC: PERSONAS (10 ejemplares)
+ 
+INSERT INTO PERSONAS VALUES (1,  'Sofia Mendez');
+INSERT INTO PERSONAS VALUES (2,  'Andres Villa');
+INSERT INTO PERSONAS VALUES (3,  'Lucia Paz');
+INSERT INTO PERSONAS VALUES (5,  'Mario Quispe');
+INSERT INTO PERSONAS VALUES (6,  'Paula Reyes');
+INSERT INTO PERSONAS VALUES (7,  'Jorge Sierra');
+INSERT INTO PERSONAS VALUES (8,  'Ivan Gomez');
+INSERT INTO PERSONAS VALUES (9,  'Diana Rojas');
+INSERT INTO PERSONAS VALUES (11, 'Carlos Ospina');
+INSERT INTO PERSONAS VALUES (12, 'Valentina Cruz');
+ 
+-- GC: CICLISTAS (10 ejemplares)
+ 
+INSERT INTO CICLISTAS VALUES (1,  DATE '1995-03-12', 'Elite');
+INSERT INTO CICLISTAS VALUES (2,  DATE '1988-07-25', 'Master');
+INSERT INTO CICLISTAS VALUES (3,  DATE '2001-11-03', 'Sub23');
+INSERT INTO CICLISTAS VALUES (5,  DATE '1992-05-18', 'Elite');
+INSERT INTO CICLISTAS VALUES (6,  DATE '1999-09-07', 'Sub23');
+INSERT INTO CICLISTAS VALUES (7,  DATE '1985-01-30', 'Master');
+INSERT INTO CICLISTAS VALUES (8,  DATE '2003-04-22', 'Junior');
+INSERT INTO CICLISTAS VALUES (9,  DATE '1997-12-14', 'Elite');
+INSERT INTO CICLISTAS VALUES (11, DATE '1990-06-09', 'Elite');
+INSERT INTO CICLISTAS VALUES (12, DATE '2004-08-17', 'Junior');
+ 
+-- GC: EMPRESAS
+ 
+INSERT INTO EMPRESAS VALUES (4,  'Team Bogota SAS');
+INSERT INTO EMPRESAS VALUES (10, 'Team Cali Ltda');
+ 
+-- GC: CARRERAS (10 ejemplares)
+ 
+INSERT INTO CARRERAS VALUES ('CAR001', 'Vuelta Colombia',      'Colombia', 'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR002', 'Tour del Cafe',        'Colombia', 'Master', 'Anual');
+INSERT INTO CARRERAS VALUES ('CAR003', 'Clasica RCN',          'Colombia', 'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR004', 'Vuelta a Ecuador',     'Ecuador',  'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR005', 'Tour de los Andes',    'Peru',     'Sub23',  'Bianual');
+INSERT INTO CARRERAS VALUES ('CAR006', 'Gran Fondo Bogota',    'Colombia', 'Master', 'Anual');
+INSERT INTO CARRERAS VALUES ('CAR007', 'Ruta del Sur',         'Chile',    'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR008', 'Copa Andina',          'Colombia', 'Junior', 'Irregular');
+INSERT INTO CARRERAS VALUES ('CAR009', 'Clasica de Occidente', 'Colombia', 'Elite',  'Anual');
+INSERT INTO CARRERAS VALUES ('CAR010', 'Vuelta a Antioquia',   'Colombia', 'Master', 'Bianual');
+ 
+-- GC: PUNTOS
+ 
+INSERT INTO PUNTOS VALUES ('SAL_C1',  1, 'Salida',  0.00,   NULL,  'CAR001');
+INSERT INTO PUNTOS VALUES ('PAS_C1A', 3, 'Paso',    65.50,  14400, 'CAR001');
+INSERT INTO PUNTOS VALUES ('PAS_C1B', 5, 'Paso',    110.00, 21600, 'CAR001');
+INSERT INTO PUNTOS VALUES ('LLE_C1',  7, 'Llegada', 175.00, 32400, 'CAR001');
+INSERT INTO PUNTOS VALUES ('SAL_C2',  1, 'Salida',  0.00,   NULL,  'CAR002');
+INSERT INTO PUNTOS VALUES ('PAS_C2A', 2, 'Paso',    40.00,  9000,  'CAR002');
+INSERT INTO PUNTOS VALUES ('LLE_C2',  4, 'Llegada', 120.00, 25200, 'CAR002');
+INSERT INTO PUNTOS VALUES ('SAL_C3',  1, 'Salida',  0.00,   NULL,  'CAR003');
+INSERT INTO PUNTOS VALUES ('PAS_C3A', 3, 'Paso',    55.00,  12600, 'CAR003');
+INSERT INTO PUNTOS VALUES ('LLE_C3',  5, 'Llegada', 150.00, 28800, 'CAR003');
+INSERT INTO PUNTOS VALUES ('SAL_C4',  1, 'Salida',  0.00,   NULL,  'CAR004');
+INSERT INTO PUNTOS VALUES ('LLE_C4',  4, 'Llegada', 130.00, 27000, 'CAR004');
+ 
+-- GC: SEGMENTOS (10 ejemplares)
+ 
+INSERT INTO SEGMENTOS VALUES ('SEG001', 'Montana',      'SAL_C1',  'PAS_C1A');
+INSERT INTO SEGMENTOS VALUES ('SEG002', 'Descenso',     'PAS_C1A', 'PAS_C1B');
+INSERT INTO SEGMENTOS VALUES ('SEG003', 'Plano',        'PAS_C1B', 'LLE_C1');
+INSERT INTO SEGMENTOS VALUES ('SEG004', 'Contrarreloj', 'SAL_C2',  'PAS_C2A');
+INSERT INTO SEGMENTOS VALUES ('SEG005', 'Montana',      'PAS_C2A', 'LLE_C2');
+INSERT INTO SEGMENTOS VALUES ('SEG006', 'Plano',        'SAL_C3',  'PAS_C3A');
+INSERT INTO SEGMENTOS VALUES ('SEG007', 'Descenso',     'PAS_C3A', 'LLE_C3');
+INSERT INTO SEGMENTOS VALUES ('SEG008', 'Montana',      'SAL_C4',  'LLE_C4');
+INSERT INTO SEGMENTOS VALUES ('SEG009', 'Plano',        'SAL_C1',  'PAS_C1B');
+INSERT INTO SEGMENTOS VALUES ('SEG010', 'Contrarreloj', 'SAL_C3',  'LLE_C3');
+ 
+-- GC: PROPIEDADDE (10 ejemplares)
+ 
+INSERT INTO PROPIEDADDE VALUES (4,  'CAR001', 60.00);
+INSERT INTO PROPIEDADDE VALUES (10, 'CAR001', 40.00);
+INSERT INTO PROPIEDADDE VALUES (4,  'CAR002', 100.00);
+INSERT INTO PROPIEDADDE VALUES (10, 'CAR003', 50.00);
+INSERT INTO PROPIEDADDE VALUES (4,  'CAR004', 75.00);
+INSERT INTO PROPIEDADDE VALUES (10, 'CAR005', NULL);
+INSERT INTO PROPIEDADDE VALUES (4,  'CAR006', 80.00);
+INSERT INTO PROPIEDADDE VALUES (10, 'CAR007', 100.00);
+INSERT INTO PROPIEDADDE VALUES (4,  'CAR008', 55.00);
+INSERT INTO PROPIEDADDE VALUES (10, 'CAR009', 90.00);
+ 
+-- GC: VERSIONES (10 ejemplares)
+ 
+INSERT INTO VERSIONES VALUES ('V2022', DATE '2022-06-01', 'CAR001');
+INSERT INTO VERSIONES VALUES ('V2023', DATE '2023-06-05', 'CAR001');
+INSERT INTO VERSIONES VALUES ('V2024', DATE '2024-06-03', 'CAR001');
+INSERT INTO VERSIONES VALUES ('TC22',  DATE '2022-08-10', 'CAR002');
+INSERT INTO VERSIONES VALUES ('TC23',  DATE '2023-08-14', 'CAR002');
+INSERT INTO VERSIONES VALUES ('TC24',  DATE '2024-08-12', 'CAR002');
+INSERT INTO VERSIONES VALUES ('RCN22', DATE '2022-09-20', 'CAR003');
+INSERT INTO VERSIONES VALUES ('RCN23', DATE '2023-09-18', 'CAR003');
+INSERT INTO VERSIONES VALUES ('VEC23', DATE '2023-10-05', 'CAR004');
+INSERT INTO VERSIONES VALUES ('COP23', DATE '2023-11-15', 'CAR008');
+ 
+-- Tablas asociativas N:M
+ 
+INSERT INTO CICLISTA_VERSION VALUES (1,  'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (2,  'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (3,  'V2023');
+INSERT INTO CICLISTA_VERSION VALUES (5,  'V2022');
+INSERT INTO CICLISTA_VERSION VALUES (6,  'TC23');
+INSERT INTO CICLISTA_VERSION VALUES (7,  'TC22');
+INSERT INTO CICLISTA_VERSION VALUES (8,  'RCN22');
+INSERT INTO CICLISTA_VERSION VALUES (9,  'RCN23');
+INSERT INTO CICLISTA_VERSION VALUES (11, 'VEC23');
+INSERT INTO CICLISTA_VERSION VALUES (12, 'COP23');
+INSERT INTO CICLISTA_VERSION VALUES (9,  'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (11, 'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (5, 'V2024');
+INSERT INTO CICLISTA_VERSION VALUES (5, 'V2023');
+ 
+INSERT INTO VERSION_SEGMENTO VALUES ('V2024', 'SEG001');
+INSERT INTO VERSION_SEGMENTO VALUES ('V2024', 'SEG002');
+INSERT INTO VERSION_SEGMENTO VALUES ('V2023', 'SEG001');
+INSERT INTO VERSION_SEGMENTO VALUES ('V2022', 'SEG003');
+INSERT INTO VERSION_SEGMENTO VALUES ('TC22',  'SEG004');
+INSERT INTO VERSION_SEGMENTO VALUES ('TC23',  'SEG005');
+INSERT INTO VERSION_SEGMENTO VALUES ('TC24',  'SEG004');
+INSERT INTO VERSION_SEGMENTO VALUES ('RCN22', 'SEG006');
+INSERT INTO VERSION_SEGMENTO VALUES ('RCN23', 'SEG007');
+INSERT INTO VERSION_SEGMENTO VALUES ('VEC23', 'SEG008');
+ 
+INSERT INTO PARTICIPANTE_VERSION VALUES (1,  'V2024');
+INSERT INTO PARTICIPANTE_VERSION VALUES (2,  'V2024');
+INSERT INTO PARTICIPANTE_VERSION VALUES (4,  'V2023');
+INSERT INTO PARTICIPANTE_VERSION VALUES (5,  'V2022');
+INSERT INTO PARTICIPANTE_VERSION VALUES (6,  'TC23');
+INSERT INTO PARTICIPANTE_VERSION VALUES (7,  'TC22');
+INSERT INTO PARTICIPANTE_VERSION VALUES (8,  'RCN22');
+INSERT INTO PARTICIPANTE_VERSION VALUES (9,  'RCN23');
+INSERT INTO PARTICIPANTE_VERSION VALUES (10, 'VEC23');
+INSERT INTO PARTICIPANTE_VERSION VALUES (11, 'COP23');
+ 
+-- GC: REGISTROS (12 ejemplares)
+ 
+INSERT INTO REGISTROS VALUES (1,  DATE '2024-06-05', 21600, 1,  'Oficial',   'Alta',  NULL,           'V2024', 1,  'SEG001');
+INSERT INTO REGISTROS VALUES (2,  DATE '2024-06-05', 22500, 2,  'Oficial',   'Alta',  NULL,           'V2024', 2,  'SEG001');
+INSERT INTO REGISTROS VALUES (3,  DATE '2024-06-05', 23800, 3,  'Oficial',   'Media', 'Muy exigente', 'V2024', 5,  'SEG001');
+INSERT INTO REGISTROS VALUES (4,  DATE '2024-06-06', 18900, 1,  'Oficial',   'Baja',  NULL,           'V2024', 9,  'SEG002');
+INSERT INTO REGISTROS VALUES (5,  DATE '2024-06-06', 19500, 2,  'Pendiente', 'Media', NULL,           'V2024', 11, 'SEG002');
+INSERT INTO REGISTROS VALUES (6,  DATE '2024-06-07', 28800, 1,  'Oficial',   'Alta',  'Etapa reina',  'V2024', 1,  'SEG003');
+INSERT INTO REGISTROS VALUES (7,  DATE '2023-06-08', 22000, 1,  'Oficial',   'Alta',  NULL,           'V2023', 2,  'SEG001');
+INSERT INTO REGISTROS VALUES (8,  DATE '2023-06-08', 23100, 2,  'Oficial',   'Media', NULL,           'V2023', 5,  'SEG001');
+INSERT INTO REGISTROS VALUES (9,  DATE '2022-08-12', 15300, 1,  'Oficial',   'Baja',  NULL,           'TC22',  7,  'SEG004');
+INSERT INTO REGISTROS VALUES (10, DATE '2022-08-12', 16200, 2,  'Oficial',   'Baja',  NULL,           'TC22',  9,  'SEG004');
+INSERT INTO REGISTROS VALUES (11, DATE '2023-08-15', 17400, 1,  'Oficial',   'Media', NULL,           'TC23',  6,  'SEG005');
+INSERT INTO REGISTROS VALUES (12, DATE '2022-09-22', 24300, 1,  'Oficial',   'Alta',  'Record',       'RCN22', 8,  'SEG006');
+ 
+-- GC: FOTOS (3 ejemplares)
+ 
+INSERT INTO FOTOS VALUES (1, EMPTY_BLOB(), 1);
+INSERT INTO FOTOS VALUES (2, EMPTY_BLOB(), 3);
+INSERT INTO FOTOS VALUES (3, EMPTY_BLOB(), 6);
+ 
+-- GC: ENCUESTAS (10 ejemplares)
+ 
+INSERT INTO ENCUESTAS VALUES (1,  'calidad percibida', 600000, 12000, DATE '2024-06-01', DATE '2024-06-30', 'V2024');
+INSERT INTO ENCUESTAS VALUES (2,  'infraestructura',   400000, 8000,  DATE '2024-06-01', DATE '2024-06-30', 'V2024');
+INSERT INTO ENCUESTAS VALUES (3,  'atencion',          250000, 5000,  DATE '2023-06-01', DATE '2023-06-30', 'V2023');
+INSERT INTO ENCUESTAS VALUES (4,  'tiempo de espera',  300000, 6000,  DATE '2022-06-01', DATE '2022-06-28', 'V2022');
+INSERT INTO ENCUESTAS VALUES (5,  'calidad percibida', 500000, 10000, DATE '2023-08-01', DATE '2023-08-31', 'TC23');
+INSERT INTO ENCUESTAS VALUES (6,  'infraestructura',   350000, 7000,  DATE '2022-08-01', DATE '2022-08-30', 'TC22');
+INSERT INTO ENCUESTAS VALUES (7,  'atencion',          200000, 4000,  DATE '2022-09-15', DATE '2022-09-30', 'RCN22');
+INSERT INTO ENCUESTAS VALUES (8,  'tiempo de espera',  280000, 5500,  DATE '2023-09-10', DATE '2023-09-28', 'RCN23');
+INSERT INTO ENCUESTAS VALUES (9,  'calidad percibida', 450000, 9000,  DATE '2023-10-05', DATE '2023-10-25', 'VEC23');
+INSERT INTO ENCUESTAS VALUES (10, 'infraestructura',   320000, 6500,  DATE '2023-11-15', DATE '2023-11-30', 'COP23');
+ 
+-- GC: EVALUACIONES (12 ejemplares)
+ 
+INSERT INTO EVALUACIONES VALUES (1,  DATE '2024-06-10', 5, 'publicada',     NULL, 'Excelente organizacion',    'Web',   1,  1);
+INSERT INTO EVALUACIONES VALUES (2,  DATE '2024-06-11', 3, 'en moderacion', NULL, NULL,                        'Movil', 1,  2);
+INSERT INTO EVALUACIONES VALUES (3,  DATE '2024-06-12', 4, 'publicada',     NULL, 'Buena logistica',           'Web',   2,  5);
+INSERT INTO EVALUACIONES VALUES (4,  DATE '2024-06-13', 2, 'validada',      NULL, 'Falta senalizacion',        'Movil', 2,  7);
+INSERT INTO EVALUACIONES VALUES (5,  DATE '2023-06-15', 5, 'publicada',     NULL, 'Todo perfecto',             'Web',   3,  1);
+INSERT INTO EVALUACIONES VALUES (6,  DATE '2023-06-16', 4, 'archivada',     NULL, NULL,                        'Web',   3,  9);
+INSERT INTO EVALUACIONES VALUES (7,  DATE '2022-06-20', 3, 'publicada',     NULL, 'Regular atencion medica',   'Movil', 4,  6);
+INSERT INTO EVALUACIONES VALUES (8,  DATE '2022-08-12', 5, 'publicada',     NULL, 'Excelente cronometraje',    'Web',   6,  11);
+INSERT INTO EVALUACIONES VALUES (9,  DATE '2023-08-20', 4, 'validada',      NULL, 'Buen recorrido',            'Movil', 5,  2);
+INSERT INTO EVALUACIONES VALUES (10, DATE '2022-09-25', 2, 'publicada',     NULL, 'Problemas con hidratacion', 'Web',   7,  5);
+INSERT INTO EVALUACIONES VALUES (11, DATE '2023-09-15', 5, 'publicada',     NULL, 'Perfecta organizacion',     'Web',   8,  9);
+INSERT INTO EVALUACIONES VALUES (12, DATE '2023-10-10', 3, 'en moderacion', NULL, NULL,                        'Movil', 9,  3);
+ 
+-- GC: COMENTARIOS (12 ejemplares)
+ 
+INSERT INTO COMENTARIOS VALUES (1,  'Totalmente de acuerdo',            1);
+INSERT INTO COMENTARIOS VALUES (2,  'Confirmo lo dicho',                1);
+INSERT INTO COMENTARIOS VALUES (3,  'No comparto esa opinion',          2);
+INSERT INTO COMENTARIOS VALUES (4,  'Excelente punto de vista',         3);
+INSERT INTO COMENTARIOS VALUES (5,  'Coincido con la evaluacion',       4);
+INSERT INTO COMENTARIOS VALUES (6,  'La organizacion mejoro mucho',     5);
+INSERT INTO COMENTARIOS VALUES (7,  'Espero lo mismo el proximo anio',  5);
+INSERT INTO COMENTARIOS VALUES (8,  'Falta mejorar los banos',          7);
+INSERT INTO COMENTARIOS VALUES (9,  'El cronometro fue preciso',        8);
+INSERT INTO COMENTARIOS VALUES (10, 'Buen recorrido en general',        9);
+INSERT INTO COMENTARIOS VALUES (11, 'Me parecio corto el recorrido',    10);
+INSERT INTO COMENTARIOS VALUES (12, 'Muy de acuerdo con el comentario', 11);
+ 
